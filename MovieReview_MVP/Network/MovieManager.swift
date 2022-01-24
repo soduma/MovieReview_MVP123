@@ -16,7 +16,7 @@ struct RequestModel: Codable {
     let query: String
 }
 
-struct MovieManager: Codable {
+struct MovieManager: MovieManagerProtocol {
     func fetchMovie(from keyword: String, completionHandler: @escaping ([Movie]) -> Void) {
         guard let url = URL(string: "https://openapi.naver.com/v1/search/movie.json") else { return }
         

@@ -21,4 +21,19 @@ struct Movie: Codable {
     
     var imageURL: URL? {
         return URL(string: image) }
+    
+    init(title: String,
+         imageURL: String,
+         pubDate: String,
+         director: String,
+         actor: String,
+         userRating: String) {
+        self.title = title
+        self.image = imageURL
+        self.pubDate = pubDate
+        self.director = director
+        self.actor = actor
+        self.userRating = userRating
+        
+    }
 }

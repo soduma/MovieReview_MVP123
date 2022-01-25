@@ -38,6 +38,12 @@ class MovieListViewController: UIViewController {
             print(movies)
         }
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        presenter.viewWillAppear()
+    }
 }
 
 extension MovieListViewController: MovieListProtocol {
@@ -45,7 +51,7 @@ extension MovieListViewController: MovieListProtocol {
         navigationItem.title = "영화 평점"
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
-    }
+        }
     
     func setUpSearchBar() {
         searchController.obscuresBackgroundDuringPresentation = false
@@ -55,7 +61,7 @@ extension MovieListViewController: MovieListProtocol {
     
     func setUpLayout() {
         [collectionView, tableView]
-            .forEach{ view.addSubview($0) }
+            .forEach { view.addSubview($0) }
         
         collectionView.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -71,5 +77,14 @@ extension MovieListViewController: MovieListProtocol {
     func updateTableView(isHidden: Bool) {
         tableView.isHidden = isHidden
         tableView.reloadData()
+    }
+    
+    func pushToMovieDetailViewController(with movie: Movie) {
+        let movieDetailViewController = MovieDetailViewController(movie: movie)
+        navigationController?.pushViewController(movieDetailViewController, animated: true)
+    }
+    
+    func updateCollectionView() {
+        collectionView.reloadData()
     }
 }

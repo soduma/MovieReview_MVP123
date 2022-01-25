@@ -12,23 +12,22 @@ protocol MovieListProtocol: AnyObject {
     func setUpSearchBar()
     func setUpLayout()
     func updateTableView(isHidden: Bool)
+    func pushToMovieDetailViewController(with movie: Movie)
+    func updateCollectionView()
 }
 
 class MovieListPresenter: NSObject {
     private weak var viewController: MovieListProtocol?
     private let movieManager: MovieManagerProtocol
+    private let userDefaultsManager: UserDefaultsManagerProtocol
     
-    private var likedMovie: [Movie] = [
-        Movie(title: "겨울왕국", imageURL: "", pubDate: "2021", director: "abc", actor: "abc", userRating: "5.0"),
-        Movie(title: "겨울왕국", imageURL: "", pubDate: "2021", director: "abc", actor: "abc", userRating: "5.0"),
-        Movie(title: "겨울왕국", imageURL: "", pubDate: "2021", director: "abc", actor: "abc", userRating: "5.0")
-    ]
-    
+    private var likedMovie: [Movie] = []
     private var currentMovieResult: [Movie] = []
     
     init(viewController: MovieListProtocol,
-         movieManager: MovieManagerProtocol = MovieManager()) {
+         movieManager: MovieManagerProtocol = MovieManager(), userDefaultsManager: UserDefaultsManagerProtocol = UserDefaultsManager()) {
         self.viewController = viewController
+        self.userDefaultsManager = userDefaultsManager
         self.movieManager = movieManager
     }
     
@@ -36,6 +35,11 @@ class MovieListPresenter: NSObject {
         viewController?.setUpNavigation()
         viewController?.setUpSearchBar()
         viewController?.setUpLayout()
+    }
+    
+    func viewWillAppear() {
+        likedMovie = userDefaultsManager.getMovies()
+        viewController?.updateCollectionView()
     }
 }
 
@@ -67,6 +71,10 @@ extension MovieListPresenter: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        viewController?.pushToMovieDetailViewController(with: likedMovie[indexPath.item])
+    }
 }
 
 extension MovieListPresenter: UICollectionViewDataSource {
@@ -75,8 +83,7 @@ extension MovieListPresenter: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: MovieListCollectionViewCell.identifier, for: indexPath)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieListCollectionViewCell.identifier, for: indexPath)
                 as? MovieListCollectionViewCell else { return UICollectionViewCell() }
         
         let movie = likedMovie[indexPath.item]
@@ -86,7 +93,9 @@ extension MovieListPresenter: UICollectionViewDataSource {
 }
 
 extension MovieListPresenter: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        viewController?.pushToMovieDetailViewController(with: currentMovieResult[indexPath.row])
+    }
 }
 
 extension MovieListPresenter: UITableViewDataSource {

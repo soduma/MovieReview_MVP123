@@ -51,7 +51,7 @@ extension MovieListViewController: MovieListProtocol {
         navigationItem.title = "영화 평점"
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
-        }
+    }
     
     func setUpSearchBar() {
         searchController.obscuresBackgroundDuringPresentation = false
